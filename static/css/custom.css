@@ -18,3 +18,9 @@
 .text-content {
   padding: 2em;
 }
+
+.container {
+  max-width: 260px!important;
+  left: 0;
+  margin-left: revert-layer;
+}
