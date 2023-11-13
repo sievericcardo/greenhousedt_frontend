@@ -208,8 +208,8 @@
           <h2 class="display-5">Fuseki Update</h2>
           <p class="lead">And an even wittier subheading.</p>
         </div>
-        <div class="bg-body-tertiary shadow-sm mx-auto" style="width: 80%; height: 300px; border-radius: 21px 21px; margin: 20px;"></div>
-        <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Update Fuseki Model</button>
+        <div id="resultContainer" class="bg-body-tertiary shadow-sm mx-auto text-content" style="width: 80%; height: 300px; border-radius: 21px 21px; margin: 20px;"></div>
+        <button type="button" class="btn btn-primary btn-lg px-4 gap-3" onclick="submitForm()">Update Fuseki Model</button>
       </div>
     </div>
     <div class="text-bg-primary me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
@@ -217,7 +217,7 @@
         <h2 class="display-5">SMOL Execution</h2>
         <p class="lead">And an even wittier subheading.</p>
       </div>
-      <div class="bg-body-tertiary shadow-sm mx-auto" style="width: 80%; height: 67vh; border-radius: 21px 21px;"></div>
+      <div class="bg-body-tertiary shadow-sm mx-auto text-content" style="width: 80%; height: 67vh; border-radius: 21px 21px;"></div>
     </div>
   </div>
 </main>
@@ -269,6 +269,23 @@
     </div>
   </div>
 </footer>
+
+<script>
+  function submitForm() {
+      // Perform the POST request
+      fetch('/submit', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+          }
+      })
+      .then(response => response.text())
+      .then(result => {
+          // Update the result container with the response
+          document.getElementById('resultContainer').innerHTML = '<p>Result: ' + result + '</p>';
+      });
+  }
+</script>
 <!-- <script src="../static/js/bootstrap.bundle.min.js"></script> -->
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     </body>
