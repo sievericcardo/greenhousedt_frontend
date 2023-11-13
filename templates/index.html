@@ -202,7 +202,7 @@
 <main>
   <div class="d-md-flex flex-md-equal w-100 my-md-3 ps-md-3">
     <div class="text-bg-dark me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
-      <img src="data:image/png;base64,{{ graph_data }}" class="data-graph" alt="Matplotlib Graph">
+      <img id="graphImage" src="data:image/png;base64,{{ graph_data }}" class="data-graph" alt="Matplotlib Graph">
       <div style="padding-bottom: 20px;">
         <div class="my-3 py-3">
           <h2 class="display-5">Fuseki Update</h2>
@@ -270,21 +270,41 @@
   </div>
 </footer>
 
+<!-- Make the post request to update the model -->
 <script>
   function submitForm() {
-      // Perform the POST request
-      fetch('/submit', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-          }
-      })
-      .then(response => response.text())
-      .then(result => {
-          // Update the result container with the response
-          document.getElementById('resultContainer').innerHTML = '<p>Result: ' + result + '</p>';
+    // Perform the POST request
+    fetch('/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      }
+    })
+    .then(response => response.text())
+    .then(result => {
+      // Update the result container with the response
+      document.getElementById('resultContainer').innerHTML = '<p>Result: ' + result + '</p>';
+    });
+  }
+</script>
+
+<!-- Update the image every 30 seconds -->
+<script>
+  function updateGraph() {
+    // Fetch the new graph data from the server
+    fetch('/get_graph')
+      .then(response => response.json())
+      .then(data => {
+        // Update the src attribute with the new graph data
+        document.getElementById('graphImage').src = 'data:image/png;base64,' + data.graph_data;
       });
   }
+
+  // Update the graph every 30 seconds
+  setInterval(updateGraph, 30000);
+
+  // Initial update
+  updateGraph();
 </script>
 <!-- <script src="../static/js/bootstrap.bundle.min.js"></script> -->
 <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>

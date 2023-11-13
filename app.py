@@ -19,6 +19,11 @@ def index():
 
     return render_template('index.html', text_content=text_content, graph_data=graph_data)
 
+@app.route('/get_graph')
+def get_graph():
+    graph_data = generate_matplotlib_graph()
+    return {'graph_data': graph_data}
+
 def generate_matplotlib_graph():
     # Your Matplotlib graph generation logic goes here
     # For demonstration purposes, let's create a simple plot
