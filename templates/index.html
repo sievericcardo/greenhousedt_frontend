@@ -185,12 +185,14 @@
         <button type="button" class="btn btn-primary btn-lg px-4 gap-3" onclick="submitForm()">Update Fuseki Model</button>
       </div>
     </div>
-    <div class="text-bg-primary me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden">
+    <div class="text-bg-primary me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-auto">
       <div class="my-3 py-3">
         <h2 class="display-5">SMOL Execution</h2>
         <!-- <p class="lead">And an even wittier subheading.</p> -->
       </div>
-      <div class="bg-body-tertiary shadow-sm mx-auto text-content" style="width: 80%; height: 67vh; border-radius: 21px 21px;"></div>
+      <div class="bg-body-tertiary shadow-sm mx-auto text-content" style="width: 80%; height: 67vh; border-radius: 21px 21px; overflow:auto;">
+        <ul id="output-list"></ul>
+      </div>
     </div>
   </div>
 </main>
