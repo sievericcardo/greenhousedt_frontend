@@ -6,6 +6,7 @@ from matplotlib.figure import Figure
 import requests
 from io import BytesIO
 import base64
+import json
 
 app = Flask(__name__)
 
@@ -18,6 +19,26 @@ def index():
     text_content = "This is some text content."
 
     return render_template('index.html', text_content=text_content, graph_data=graph_data)
+
+@app.route('/get_model')
+def get_model():
+    return __get_model()
+
+def __get_model ():
+    delimiters = ["Plant", "Pot", "Pump"]
+    models = {}
+    
+    with open('model.txt', 'r') as file:
+        model = file.read()
+
+    for delimiter in delimiters:
+        start = model.find(f"RECONFIG> New {delimiter}(s) detected: repairing the model")
+        end = model.find(f"RECONFIG> {delimiter}(s) added")
+
+        if start != -1 and end != -1:
+            models[delimiter] = model[start:end]
+
+    return json.dumps(models)
 
 @app.route('/get_graph')
 def get_graph():
