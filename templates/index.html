@@ -311,6 +311,7 @@
     fetch('/get_graph')
       .then(response => response.json())
       .then(data => {
+        console.log(data);
         // Update the src attribute with the new graph data
         document.getElementById('graphImage').src = 'data:image/png;base64,' + data.graph_data;
       });
