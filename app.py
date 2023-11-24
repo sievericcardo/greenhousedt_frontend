@@ -7,13 +7,15 @@ import requests
 from io import BytesIO
 import base64
 import json
+import pandas as pd
+import matplotlib.dates as mdates
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     # Generate Matplotlib graph
-    graph_data = generate_matplotlib_graph()
+    graph_data = __generate_matplotlib_graph()
 
     # Pass data to the template
     text_content = "This is some text content."
@@ -42,24 +44,47 @@ def __get_model ():
 
 @app.route('/get_graph')
 def get_graph():
-    graph_data = generate_matplotlib_graph()
+    graph_data = __generate_matplotlib_graph()
     return {'graph_data': graph_data}
 
-def generate_matplotlib_graph():
-    # Your Matplotlib graph generation logic goes here
-    # For demonstration purposes, let's create a simple plot
-    x = [1, 2, 3, 4, 5]
-    y = [2, 4, 6, 8, 10]
+def __generate_matplotlib_graph():
+    df = pd.read_csv('query.csv')
 
+    df_m = df.loc[df['_field'] == 'moisture', :]
+
+    # Remove rows with invalid '_time' values using regular expressions
+    df_m = df_m[df_m['_time'].str.contains('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z', na=False)]
+
+    # Convert the date column to a datetime format and rename to 'ds', and the target column to 'y'
+    df_m['ds'] = pd.to_datetime(df_m['_time'], errors='coerce').dt.tz_convert(None)
+
+    df_m.dropna(subset=['ds'], inplace=True)
+
+    # Filter out the rows with invalid target values using regular expressions
+    df_m = df_m[~df_m['_value'].str.contains('[^0-9\.]', na=False)]
+
+    # Convert the target column to numeric format
+    df_m['y'] = pd.to_numeric(df_m['_value'])
+
+    # Check for out-of-range date values
+    out_of_range_dates = df_m[(df_m['ds'] < pd.Timestamp('0001-01-01')) | (df_m['ds'] > pd.Timestamp('9999-12-31'))]
+
+    # Set figure and axis using subplots()
     matplotlib.use('agg')
-
     fig, ax = plt.subplots()
-    ax.plot(x, y)
-    ax.set_xlabel('X-axis')
-    ax.set_ylabel('Y-axis')
-    ax.set_title('Matplotlib Graph')
 
-    # Save the plot to a BytesIO object
+    # Plot the data
+    df_m.plot(x='ds', y='y', kind='line', ax=ax, x_compat=True)
+
+    # Set the x-axis label
+    ax.set_xlabel('Date')
+    ax.set_ylabel('Moisture %')
+
+    # Format the x-axis ticks (display month and day without year)
+    date_fmt = mdates.DateFormatter('%d %b')
+    ax.xaxis.set_major_formatter(date_fmt)
+    ax.set_title('Moisture over time')
+
     buffer = BytesIO()
     canvas = FigureCanvas(fig)
     canvas.print_png(buffer)
