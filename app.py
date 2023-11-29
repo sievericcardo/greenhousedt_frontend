@@ -34,11 +34,14 @@ def __get_model ():
         model = file.read()
 
     for delimiter in delimiters:
-        start = model.find(f"RECONFIG> New {delimiter}(s) detected: repairing the model")
-        end = model.find(f"RECONFIG> {delimiter}(s) added")
+        start = model.rfind(f"RECONFIG> New {delimiter}(s) detected: repairing the model")
+        end = model.rfind(f"RECONFIG> {delimiter}(s) added")
 
         if start != -1 and end != -1:
-            models[delimiter] = model[start:end]
+            if delimiter in models:
+                models[delimiter] += model[start:end]
+            else:
+                models[delimiter] = model[start:end]
 
     return json.dumps(models)
 
@@ -115,7 +118,8 @@ def submit():
             ast:basilicum3 rdf:type owl:NamedIndividual , \
                                     ast:Basilicum ; \
                         ast:hasIdealMoisture \"60.0\"^^xsd:double ; \
-                        ast:hasPlantId \"5\"^^xsd:string . \
+                        ast:hasPlantId \"5\"^^xsd:string ; \
+                        ast:hasPlantType \"Basilicum\"^^xsd:string . \
             } \
             WHERE { \
             FILTER NOT EXISTS { ast:basilicum3 rdf:type ast:Basilicum . \
