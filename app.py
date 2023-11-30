@@ -9,6 +9,17 @@ import base64
 import json
 import pandas as pd
 import matplotlib.dates as mdates
+import stomp
+import os
+import time
+
+# Create a connection listener to handle callbacks from the STOMP connection
+class StompConnectionListener(stomp.ConnectionListener):
+    def on_error(self, headers, message):
+        print(f'Received an error: {message}')
+
+    def on_message(self, headers, body):
+        print(f'Received message: {body}')
 
 app = Flask(__name__)
 
@@ -106,6 +117,23 @@ def clean_up(response):
     plt.close('all')
     return response
 
+def __load_env_file(env_file_path=".env"):
+    try:
+        with open(env_file_path, "r") as file:
+            for line in file:
+                # Ignore lines that are empty or start with '#'
+                if not line.strip() or line.startswith("#"):
+                    continue
+
+                # Split the line at the first '=' character
+                key, value = line.strip().split("=", 1)
+
+                # Set the environment variable
+                os.environ[key] = value
+
+    except FileNotFoundError:
+        print(f"{env_file_path} not found. Make sure to create a .env file with your environment variables.")
+
 @app.route('/submit', methods=['POST'])
 def submit():
     # Get data from the form
@@ -132,6 +160,45 @@ def submit():
 
     # Process the data if needed
     result = f"Query submitted: {query}"
+
+    __load_env_file()
+    url = os.getenv("URL")
+    username = os.getenv("USER")
+    password = os.getenv("PASS")
+
+    # Replace these with your server's hostname and port
+    active_mq_host = url
+    active_mq_port = 61613
+
+    # The ActiveMQ queue name
+    destination_queue = 'controller.1.asset.model'
+
+    # Your message
+    message_to_send = '[MSG]Update the asset model'
+
+    # Establish the STOMP connection
+    # conn = stomp.Connection([(active_mq_host, active_mq_port)])
+
+    # # Set the connection listener
+    # conn.set_listener('', StompConnectionListener())
+
+    # # Start the STOMP connection
+    # conn.start()
+    # conn.connect(wait=True)  # use wait=True to wait for the receipt
+    #                         # remove wait=True if you don't want to wait for the connection
+
+    conn = stomp.Connection([(active_mq_host, active_mq_port)])
+    conn.set_listener('', StompConnectionListener())
+    conn.connect(username, password, wait=True)
+
+    # Send a message to the ActiveMQ queue
+    conn.send(body=message_to_send, destination=destination_queue)
+
+    # Sleep to allow for the message to be sent and received in the queue
+    time.sleep(2)
+
+    # Disconnect from the ActiveMQ server
+    conn.disconnect()
 
     # Return a JSON response
     return jsonify(result)
