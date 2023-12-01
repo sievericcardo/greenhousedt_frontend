@@ -167,16 +167,30 @@
           <h2 class="display-5 text-light">Fuseki Update</h2>
           <!-- <p class="lead">And an even wittier subheading.</p> -->
         </div>
-        <div id="resultContainer" class="bg-body-tertiary shadow-sm mx-auto text-content" style="width: 80%; height: 300px; border-radius: 21px 21px; margin: 20px;"></div>
-        <button type="button" class="btn btn-primary btn-lg px-4 gap-3" onclick="submitForm()">Update Fuseki Model</button>
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-demo-tab" data-bs-toggle="tab" data-bs-target="#nav-demo" type="button" role="tab" aria-controls="nav-demo" aria-selected="true">Demo</button>
+            <button class="nav-link" id="nav-prod-tab" data-bs-toggle="tab" data-bs-target="#nav-prod" type="button" role="tab" aria-controls="nav-prod" aria-selected="false">GreenHouse</button>
+          </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="nav-demo" role="tabpanel" aria-labelledby="nav-demo-tab">
+            <div id="resultContainer" class="bg-body-tertiary shadow-sm mx-auto text-content" style="width: 80%; height: 300px; border-radius: 21px 21px; margin: 20px;"></div>
+            <button type="button" class="btn btn-primary btn-lg px-4 gap-3" onclick="submitForm()">Update Fuseki Model</button>
+          </div>
+          <div class="tab-pane fade" id="nav-prod" role="tabpanel" aria-labelledby="nav-prod-tab">
+            <div id="query-box" class="bg-body-tertiary shadow-sm mx-auto text-content" style="width: 80%; height: 300px; border-radius: 21px 21px; margin: 20px;">
+              <textarea rows="9" placeholder="Enter SPARQL query here..." id="query" class="form-control" spellcheck="false"></textarea>
+            </div>
+            <button type="button" class="btn btn-primary btn-lg px-4 gap-3" onclick="updateQuery()">Execute Update Query</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="text-bg-primary me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-auto">
       <div class="my-3 py-3">
         <h2 class="display-5">SMOL Execution</h2>
-        <p class="lead">Plants status.</p>
       </div>
-      <!-- <div class="bg-body-tertiary shadow-sm mx-auto text-content" style="width: 80%; height: 67vh; border-radius: 21px 21px; overflow:auto;"> -->
         <div class="accordion" id="accordionExample">
           <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne">
@@ -224,106 +238,25 @@
       <img class="logo" src="{{ url_for('static', filename='img/green-tween-tree-logo.webp') }}">
       <small class="d-block mb-3 text-body-secondary">UiO</small>
     </div>
-    <!-- <div class="col-6 col-md">
-      <h5>Features</h5>
-      <ul class="list-unstyled text-small">
-        <li><a class="link-secondary text-decoration-none" href="#">Cool stuff</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Random feature</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Team feature</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Stuff for developers</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Another one</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Last time</a></li>
-      </ul>
-    </div>
-    <div class="col-6 col-md">
-      <h5>Resources</h5>
-      <ul class="list-unstyled text-small">
-        <li><a class="link-secondary text-decoration-none" href="#">Resource name</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Resource</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Another resource</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Final resource</a></li>
-      </ul>
-    </div>
-    <div class="col-6 col-md">
-      <h5>Resources</h5>
-      <ul class="list-unstyled text-small">
-        <li><a class="link-secondary text-decoration-none" href="#">Business</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Education</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Government</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Gaming</a></li>
-      </ul>
-    </div>
-    <div class="col-6 col-md">
-      <h5>About</h5>
-      <ul class="list-unstyled text-small">
-        <li><a class="link-secondary text-decoration-none" href="#">Team</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Locations</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Privacy</a></li>
-        <li><a class="link-secondary text-decoration-none" href="#">Terms</a></li>
-      </ul>
-    </div> -->
   </div>
 </footer>
 
+<!-- <script src="../static/js/bootstrap.bundle.min.js"></script> -->
+<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/custom.js') }}"></script>
 <!-- Make the post request to update the model -->
+<!-- Don't put this script above the import of the custom js file as it -->
+<!-- would not have the reference of the function to use -->
 <script>
-  function submitForm() {
-    // Perform the POST request
-    fetch('/submit', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      }
-    })
-    .then(response => response.text())
-    .then(result => {
-      // Update the result container with the response
-      document.getElementById('resultContainer').innerHTML = 'Result: ' + result.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-    });
-  }
-</script>
-
-<script>
-  function getModel() {
-    // Perform the POST request
-    fetch('/get_model')
-    .then(response => response.json())
-    .then(result => {
-      console.log(result);
-
-      document.getElementById('plants').innerHTML = result.Plant.replace(/\n/g, "<br>");
-      document.getElementById('pots').innerHTML = result.Pot.replace(/\n/g, "<br>");
-      document.getElementById('pumps').innerHTML = result.Pump.replace(/\n/g, "<br>");
-    });
-  }
-
   // Update the graph every 30 seconds
   setInterval(getModel, 30000);
-
   // Initial update
   getModel();
-</script>
-
-<!-- Update the image every 30 seconds -->
-<script>
-  function updateGraph() {
-    // Fetch the new graph data from the server
-    fetch('/get_graph')
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        // Update the src attribute with the new graph data
-        document.getElementById('graphImage').src = 'data:image/png;base64,' + data.graph_data;
-      });
-  }
 
   // Update the graph every 30 seconds
   setInterval(updateGraph, 30000);
-
   // Initial update
   updateGraph();
 </script>
-<!-- <script src="../static/js/bootstrap.bundle.min.js"></script> -->
-<script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     </body>
 </html>
