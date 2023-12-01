@@ -62,7 +62,7 @@ def get_graph():
     return {'graph_data': graph_data}
 
 def __generate_matplotlib_graph():
-    df = pd.read_csv('query.csv')
+    df = pd.read_csv('query.csv', low_memory=False)
 
     df_m = df.loc[df['_field'] == 'moisture', :]
 
@@ -71,6 +71,7 @@ def __generate_matplotlib_graph():
 
     # Convert the date column to a datetime format and rename to 'ds', and the target column to 'y'
     df_m['ds'] = pd.to_datetime(df_m['_time'], errors='coerce').dt.tz_convert(None)
+    # df_m['ds'] = pd.to_datetime(df_m['_time'], errors='coerce').dt.tz_localize(None)
 
     df_m.dropna(subset=['ds'], inplace=True)
 
@@ -89,6 +90,7 @@ def __generate_matplotlib_graph():
 
     # Plot the data
     df_m.plot(x='ds', y='y', kind='line', ax=ax, x_compat=True)
+    # df_m.plot(x='ds', y='y', kind='line', ax=ax)
 
     # Set the x-axis label
     ax.set_xlabel('Date')
@@ -192,8 +194,6 @@ def submit():
     # Process the data if needed
     result = f"Query submitted: {query}"
 
-    __send_message()
-
     # Return a JSON response
     return jsonify(result)
 
@@ -216,10 +216,13 @@ def update_query():
     elif status_code == 500:
         result = {'status': status_code, 'message': "Query failed: internal server error"}
 
-    print(result)
-    __send_message()
-
     # Return a JSON response
+    return json.dumps(result)
+
+@app.route('/update_asset_model', methods=['POST'])
+def update_asset_model():
+    __send_message()
+    result = {'status': 200, 'message': "Asset model updated successfully"}
     return json.dumps(result)
 
 if __name__ == '__main__':
