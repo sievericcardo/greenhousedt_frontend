@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
@@ -134,6 +134,37 @@ def __load_env_file(env_file_path=".env"):
     except FileNotFoundError:
         print(f"{env_file_path} not found. Make sure to create a .env file with your environment variables.")
 
+def __send_message():
+    __load_env_file()
+    url = os.getenv("URL")
+    username = os.getenv("USER")
+    password = os.getenv("PASS")
+
+    # Replace these with your server's hostname and port
+    active_mq_host = url
+    active_mq_port = 61613
+
+    # The ActiveMQ queue name
+    destination_queue = 'controller.1.asset.model'
+    # Your message
+    message_to_send = '[MSG]Update the asset model'
+
+    # Establish the STOMP connection
+    conn = stomp.Connection([(active_mq_host, active_mq_port)])
+    # Set the connection listener
+    conn.set_listener('', StompConnectionListener())
+    # Start the STOMP connection
+    conn.connect(username, password, wait=True)
+
+    # Send a message to the ActiveMQ queue
+    conn.send(body=message_to_send, destination=destination_queue)
+
+    # Sleep to allow for the message to be sent and received in the queue
+    time.sleep(2)
+
+    # Disconnect from the ActiveMQ server
+    conn.disconnect()
+
 @app.route('/submit', methods=['POST'])
 def submit():
     # Get data from the form
@@ -161,47 +192,35 @@ def submit():
     # Process the data if needed
     result = f"Query submitted: {query}"
 
-    __load_env_file()
-    url = os.getenv("URL")
-    username = os.getenv("USER")
-    password = os.getenv("PASS")
-
-    # Replace these with your server's hostname and port
-    active_mq_host = url
-    active_mq_port = 61613
-
-    # The ActiveMQ queue name
-    destination_queue = 'controller.1.asset.model'
-
-    # Your message
-    message_to_send = '[MSG]Update the asset model'
-
-    # Establish the STOMP connection
-    # conn = stomp.Connection([(active_mq_host, active_mq_port)])
-
-    # # Set the connection listener
-    # conn.set_listener('', StompConnectionListener())
-
-    # # Start the STOMP connection
-    # conn.start()
-    # conn.connect(wait=True)  # use wait=True to wait for the receipt
-    #                         # remove wait=True if you don't want to wait for the connection
-
-    conn = stomp.Connection([(active_mq_host, active_mq_port)])
-    conn.set_listener('', StompConnectionListener())
-    conn.connect(username, password, wait=True)
-
-    # Send a message to the ActiveMQ queue
-    conn.send(body=message_to_send, destination=destination_queue)
-
-    # Sleep to allow for the message to be sent and received in the queue
-    time.sleep(2)
-
-    # Disconnect from the ActiveMQ server
-    conn.disconnect()
+    __send_message()
 
     # Return a JSON response
     return jsonify(result)
+
+@app.route('/update_query', methods=['POST'])
+def update_query():
+    # Get data from the form
+    query = request.form['query']
+
+    data = {'update': query}
+    # make a post request to http://localhost:3030/GreenHouse/update
+    r = requests.post('http://localhost:3030/GreenHouse/update', data=data)
+
+    # Process the data if needed
+    status_code = r.status_code
+    
+    if status_code == 200:
+        result = {'status': status_code, 'message': "Query submitted successfully"}
+    elif status_code == 400:
+        result = {'status': status_code, 'message': "Query failed: bad request"}
+    elif status_code == 500:
+        result = {'status': status_code, 'message': "Query failed: internal server error"}
+
+    print(result)
+    __send_message()
+
+    # Return a JSON response
+    return json.dumps(result)
 
 if __name__ == '__main__':
     app.run(debug=True)
