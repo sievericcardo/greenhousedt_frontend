@@ -1,5 +1,8 @@
 function submitForm() {
   // Perform the POST request
+  let button = document.getElementById("update-demo");
+  button.disabled = true;
+
   fetch('/submit', {
     method: 'POST',
     headers: {
@@ -8,12 +11,15 @@ function submitForm() {
   })
   .then(response => response.text())
   .then(result => {
+    button.disabled = false;
     // Update the result container with the response
     document.getElementById('resultContainer').innerHTML = 'Result: ' + result.toString().replaceAll("<", "&lt;").replaceAll(">", "&gt;");
   });
 }
 
 function updateQuery() {
+  let button = document.getElementById("update-greenhouse");
+  button.disabled = true;
   // Get the query from the input field
   var query = document.getElementById('query').value;
 
@@ -30,11 +36,33 @@ function updateQuery() {
     console.log(typeof result); // log the type of result
     console.log(result);
     if (result.status == 200) {
+      
+      button.disabled = false;
       alert("Query executed successfully!");
     } else if (result.status == 500) {
       alert("Query execution failed: server error!");
     } else if (result.status == 400) {
       alert("Query execution failed: bad request!");
+    }
+  });
+}
+
+function updateAssetModel() {
+  fetch('/update_asset_model', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    }
+  })
+  .then(response => response.json())
+  .then(result => {
+    console.log(result);
+    if (result.status == 200) {
+      alert("Asset model updated successfully!");
+    } else if (result.status == 500) {
+      alert("Asset model update failed: server error!");
+    } else if (result.status == 400) {
+      alert("Asset model update failed: bad request!");
     }
   });
 }
