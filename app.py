@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 import matplotlib.pyplot as plt
 import matplotlib
+import matplotlib.dates as mdates
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 import requests
@@ -12,6 +13,7 @@ import matplotlib.dates as mdates
 import stomp
 import os
 import time
+from influxdb_client import InfluxDBClient, QueryApi
 
 # Create a connection listener to handle callbacks from the STOMP connection
 class StompConnectionListener(stomp.ConnectionListener):
@@ -62,44 +64,84 @@ def get_graph():
     return {'graph_data': graph_data}
 
 def __generate_matplotlib_graph():
-    df = pd.read_csv('query.csv', low_memory=False)
+    __load_env_file()
 
-    df_m = df.loc[df['_field'] == 'moisture', :]
+    mode = os.getenv("MODE")
+    
+    # Your InfluxDB credentials and information
+    influxdb_url = os.getenv("INFLUXDB_URL")
+    org = os.getenv("INFLUXDB_ORG")
+    token = os.getenv("INFLUXDB_TOKEN_" + mode.upper())
 
-    # Remove rows with invalid '_time' values using regular expressions
-    df_m = df_m[df_m['_time'].str.contains('\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z', na=False)]
+    bucket = os.getenv("INFLUXDB_BUCKET_" + mode.upper())
+    measurement = "ast:pot"
+    field = "moisture"
 
-    # Convert the date column to a datetime format and rename to 'ds', and the target column to 'y'
-    df_m['ds'] = pd.to_datetime(df_m['_time'], errors='coerce').dt.tz_convert(None)
-    # df_m['ds'] = pd.to_datetime(df_m['_time'], errors='coerce').dt.tz_localize(None)
+    print(f"Using {mode} mode")
+    print(f"Using bucket {bucket}")
+    print(f"Using measurement {measurement}")
+    print(f"Using field {field}")
+    print(f"Using InfluxDB URL {influxdb_url}")
+    print(f"Using InfluxDB org {org}")
+    print(f"Using InfluxDB token {token}")
 
-    df_m.dropna(subset=['ds'], inplace=True)
+    # Initialize the client
+    client = InfluxDBClient(url=influxdb_url, token=token, org=org)
 
-    # Filter out the rows with invalid target values using regular expressions
-    df_m = df_m[~df_m['_value'].str.contains('[^0-9\.]', na=False)]
+    # Initialize the query API
+    query_api = client.query_api()
 
-    # Convert the target column to numeric format
-    df_m['y'] = pd.to_numeric(df_m['_value'])
+    if mode == "demo":
+        flux_query = f'''
+        from(bucket: "{bucket}")
+            |> range(start: 2023-11-12T00:00:00Z, stop: 2023-12-03T00:00:00Z)
+            |> filter(fn: (r) => r._measurement == "{measurement}")
+            |> filter(fn: (r) => r._field == "{field}")
+        '''
+    else:
+        flux_query = f'''
+        from(bucket: "{bucket}")
+            |> range(start: -20d)
+            |> filter(fn: (r) => r._measurement == "{measurement}")
+            |> filter(fn: (r) => r._field == "{field}")
+        '''
 
-    # Check for out-of-range date values
-    out_of_range_dates = df_m[(df_m['ds'] < pd.Timestamp('0001-01-01')) | (df_m['ds'] > pd.Timestamp('9999-12-31'))]
+    # Execute the query
+    result = query_api.query(query=flux_query)
 
-    # Set figure and axis using subplots()
-    matplotlib.use('agg')
+    # Extract relevant data from the result
+    flux_table = result[0]
+
+    # Extract _time and _value columns
+    timestamps = [point['_time'] for point in flux_table.records]
+    values = [point['_value'] for point in flux_table.records]
+
+    # Convert _time to numeric format
+    timestamps_numeric = mdates.date2num(timestamps)
+
+    # Prevents errors when running on server
+    matplotlib.pyplot.switch_backend('Agg') 
+    # Plotting
     fig, ax = plt.subplots()
+    ax.plot_date(timestamps_numeric, values, '-')
 
-    # Plot the data
-    df_m.plot(x='ds', y='y', kind='line', ax=ax, x_compat=True)
-    # df_m.plot(x='ds', y='y', kind='line', ax=ax)
+    # Formatting x-axis as datetime
+    ax.xaxis.set_major_locator(mdates.AutoDateLocator())
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d'))
 
-    # Set the x-axis label
-    ax.set_xlabel('Date')
-    ax.set_ylabel('Moisture %')
+    # Rotating x-axis labels for better readability (optional)
+    plt.xticks(rotation=45)
 
-    # Format the x-axis ticks (display month and day without year)
-    date_fmt = mdates.DateFormatter('%d %b')
-    ax.xaxis.set_major_formatter(date_fmt)
-    ax.set_title('Moisture over time')
+    # Adding labels and title
+    plt.xlabel('Date')
+    plt.ylabel('Moisture %')
+    plt.title('Moisture over time')
+
+    # Show the plot
+    # plt.show()
+
+    # Save the plot to a PNG in memory
+    plt.savefig('static/img/plot.png', format='png', bbox_inches='tight')
 
     buffer = BytesIO()
     canvas = FigureCanvas(fig)
