@@ -97,6 +97,8 @@ def __generate_matplotlib_graph():
             |> range(start: 2023-11-12T00:00:00Z, stop: 2023-12-03T00:00:00Z)
             |> filter(fn: (r) => r._measurement == "{measurement}")
             |> filter(fn: (r) => r._field == "{field}")
+            |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)
+            |> yield(name: "mean")
         '''
     else:
         flux_query = f'''
@@ -104,6 +106,8 @@ def __generate_matplotlib_graph():
             |> range(start: -20d)
             |> filter(fn: (r) => r._measurement == "{measurement}")
             |> filter(fn: (r) => r._field == "{field}")
+            |> aggregateWindow(every: 1h, fn: mean, createEmpty: false)
+            |> yield(name: "mean")
         '''
 
     # Execute the query
