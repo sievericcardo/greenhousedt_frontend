@@ -145,7 +145,7 @@ def __generate_matplotlib_graph():
     # plt.show()
 
     # Save the plot to a PNG in memory
-    plt.savefig('static/img/plot.png', format='png', bbox_inches='tight')
+    #plt.savefig('static/img/plot.png', format='png', bbox_inches='tight')
 
     buffer = BytesIO()
     canvas = FigureCanvas(fig)
