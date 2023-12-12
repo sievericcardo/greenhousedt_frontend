@@ -52,9 +52,9 @@ To ensure to have the correct python dependencies execute the following
 
 ```bash
 cd /var/www
-python3 -m venv greenhousedt
-source greenhousedt/bin/activate
-pip install -r greenhousedt.local/requirements.txt
+sudo bash -c "python3 -m venv greenhousedt"
+sudo bash -c "source greenhousedt/bin/activate"
+sudo bash -c "pip install -r greenhousedt.local/requirements.txt"
 chown -R www-data: /var/www
 ```
 
@@ -132,7 +132,7 @@ sudo mkdir /model
 sudo touch /model/model.txt
 sudo groupadd web
 sudo chown -R :web /model
-sudo chmod -R 755 /model
+sudo chmod -R 775 /model
 sudo usermod -a -G web www-data
 sudo usermod -a -G web lab
 ```
