@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Riccardo Sieve">
-    <title>GreenTween Demo Dashboard</title>
+    <title>GreenHouseDT Dashboard</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
@@ -153,7 +153,7 @@
   <div class="container nav-container">
       <img class="logo" src="{{ url_for('static', filename='img/green-tween-tree-logo.webp') }}" />
       <ul class="nav nav-pills">
-        <li class="nav-item"><a href="#" class="nav-link">GreenTween</a></li>
+        <li class="nav-item"><a href="#" class="nav-link">GreenHouseDT</a></li>
       </ul>
   </div>
 </nav>
@@ -202,6 +202,24 @@
             </h2>
             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
               <div class="accordion-body" id="plants">
+                <nav>
+                  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <button class="nav-link active" id="nav-plant-new-tab" data-bs-toggle="tab" data-bs-target="#nav-plant-new" type="button" role="tab" aria-controls="nav-plant-new" aria-selected="true">New</button>
+                    <button class="nav-link" id="nav-plant-changed-tab" data-bs-toggle="tab" data-bs-target="#nav-plant-changed" type="button" role="tab" aria-controls="nav-plant-changed" aria-selected="false">Defects</button>
+                    <button class="nav-link" id="nav-plant-removed-tab" data-bs-toggle="tab" data-bs-target="#nav-plant-removed" type="button" role="tab" aria-controls="nav-plant-removed" aria-selected="false">Removals</button>
+                  </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                  <div class="tab-pane fade show active" id="nav-plant-new" role="tabpanel" aria-labelledby="nav-plant-new-tab">
+                    <div id="newPlant" class="bg-body-tertiary shadow-sm mx-auto text-content"></div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-plant-changed" role="tabpanel" aria-labelledby="nav-plant-changed-tab">
+                    <div id="changedPlant" class="bg-body-tertiary shadow-sm mx-auto text-content"></div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-plant-removed" role="tabpanel" aria-labelledby="nav-plant-removed-tab">
+                    <div id="removedPlant" class="bg-body-tertiary shadow-sm mx-auto text-content"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -213,6 +231,24 @@
             </h2>
             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
               <div class="accordion-body" id="pots">
+                <nav>
+                  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <button class="nav-link active" id="nav-pot-new-tab" data-bs-toggle="tab" data-bs-target="#nav-pot-new" type="button" role="tab" aria-controls="nav-pot-new" aria-selected="true">New</button>
+                    <button class="nav-link" id="nav-pot-changed-tab" data-bs-toggle="tab" data-bs-target="#nav-pot-changed" type="button" role="tab" aria-controls="nav-pot-changed" aria-selected="false">Defects</button>
+                    <button class="nav-link" id="nav-pot-removed-tab" data-bs-toggle="tab" data-bs-target="#nav-pot-removed" type="button" role="tab" aria-controls="nav-pot-removed" aria-selected="false">Removals</button>
+                  </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                  <div class="tab-pane fade show active" id="nav-pot-new" role="tabpanel" aria-labelledby="nav-pot-new-tab">
+                    <div id="newPot" class="bg-body-tertiary shadow-sm mx-auto text-content"></div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-pot-changed" role="tabpanel" aria-labelledby="nav-pot-changed-tab">
+                    <div id="changedPot" class="bg-body-tertiary shadow-sm mx-auto text-content"></div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-pot-removed" role="tabpanel" aria-labelledby="nav-pot-removed-tab">
+                    <div id="removedPot" class="bg-body-tertiary shadow-sm mx-auto text-content"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -224,6 +260,24 @@
             </h2>
             <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
               <div class="accordion-body" id="pumps">
+                <nav>
+                  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <button class="nav-link active" id="nav-pump-new-tab" data-bs-toggle="tab" data-bs-target="#nav-pump-new" type="button" role="tab" aria-controls="nav-pump-new" aria-selected="true">New</button>
+                    <button class="nav-link" id="nav-pump-changed-tab" data-bs-toggle="tab" data-bs-target="#nav-pump-changed" type="button" role="tab" aria-controls="nav-pump-changed" aria-selected="false">Defects</button>
+                    <button class="nav-link" id="nav-pump-removed-tab" data-bs-toggle="tab" data-bs-target="#nav-pump-removed" type="button" role="tab" aria-controls="nav-pump-removed" aria-selected="false">Removals</button>
+                  </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                  <div class="tab-pane fade show active" id="nav-pump-new" role="tabpanel" aria-labelledby="nav-pump-new-tab">
+                    <div id="newPump" class="bg-body-tertiary shadow-sm mx-auto text-content"></div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-pump-changed" role="tabpanel" aria-labelledby="nav-pump-changed-tab">
+                    <div id="changedPump" class="bg-body-tertiary shadow-sm mx-auto text-content"></div>
+                  </div>
+                  <div class="tab-pane fade" id="nav-pump-removed" role="tabpanel" aria-labelledby="nav-pump-removed-tab">
+                    <div id="removedPump" class="bg-body-tertiary shadow-sm mx-auto text-content"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
