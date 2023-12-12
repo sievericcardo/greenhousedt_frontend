@@ -47,26 +47,6 @@ function updateQuery() {
   });
 }
 
-function updateAssetModel() {
-  fetch('/update_asset_model', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    }
-  })
-  .then(response => response.json())
-  .then(result => {
-    console.log(result);
-    if (result.status == 200) {
-      alert("Asset model updated successfully!");
-    } else if (result.status == 500) {
-      alert("Asset model update failed: server error!");
-    } else if (result.status == 400) {
-      alert("Asset model update failed: bad request!");
-    }
-  });
-}
-
 function getModel() {
   // Perform the POST request
   fetch('/get_model')
@@ -89,6 +69,27 @@ function getModel() {
     // document.getElementById('plants').innerHTML = result.Plant.replace(/\n/g, "<br>");
     // document.getElementById('pots').innerHTML = result.Pot.replace(/\n/g, "<br>");
     // document.getElementById('pumps').innerHTML = result.Pump.replace(/\n/g, "<br>");
+  });
+}
+
+function updateAssetModel() {
+  fetch('/update_asset_model', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    }
+  })
+  .then(response => response.json())
+  .then(result => {
+    console.log(result);
+    getModel();
+    if (result.status == 200) {
+      alert("Asset model updated successfully!");
+    } else if (result.status == 500) {
+      alert("Asset model update failed: server error!");
+    } else if (result.status == 400) {
+      alert("Asset model update failed: bad request!");
+    }
   });
 }
 
