@@ -39,22 +39,31 @@ def index():
 def get_model():
     return __get_model()
 
-def __get_model ():
+def __get_model():
     delimiters = ["Plant", "Pot", "Pump"]
-    models = {}
-    
+    models = {delimiter: {'added': '', 'changed': '', 'removed': ''} for delimiter in delimiters}
+
     with open('model.txt', 'r') as file:
         model = file.read()
 
     for delimiter in delimiters:
+        # Find added
         start = model.rfind(f"RECONFIG> New {delimiter}(s) detected: repairing the model")
         end = model.rfind(f"RECONFIG> {delimiter}(s) added")
-
         if start != -1 and end != -1:
-            if delimiter in models:
-                models[delimiter] += model[start:end]
-            else:
-                models[delimiter] = model[start:end]
+            models[delimiter]['added'] = model[start:end]
+
+        # Find changed
+        start = model.rfind(f"RECONFIG> Changed {delimiter}(s) detected: repairing the model")
+        end = model.rfind(f"RECONFIG> {delimiter}(s) changed")
+        if start != -1 and end != -1:
+            models[delimiter]['changed'] = model[start:end]
+
+        # Find removed
+        start = model.rfind(f"RECONFIG> Misconfigured {delimiter}(s) detected: repairing the model")
+        end = model.rfind(f"RECONFIG> {delimiter}(s) removed")
+        if start != -1 and end != -1:
+            models[delimiter]['removed'] = model[start:end]
 
     return json.dumps(models)
 

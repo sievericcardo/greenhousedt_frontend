@@ -74,9 +74,21 @@ function getModel() {
   .then(result => {
     console.log(result);
 
-    document.getElementById('plants').innerHTML = result.Plant.replace(/\n/g, "<br>");
-    document.getElementById('pots').innerHTML = result.Pot.replace(/\n/g, "<br>");
-    document.getElementById('pumps').innerHTML = result.Pump.replace(/\n/g, "<br>");
+    document.getElementById('newPlant').innerHTML = result.Plant.added.replace(/\n/g, "<br>");
+    document.getElementById('changedPlant').innerHTML = result.Plant.changed.replace(/\n/g, "<br>");
+    document.getElementById('removedPlant').innerHTML = result.Plant.removed.replace(/\n/g, "<br>");
+
+    document.getElementById('newPot').innerHTML = result.Pot.added.replace(/\n/g, "<br>");
+    document.getElementById('changedPot').innerHTML = result.Pot.changed.replace(/\n/g, "<br>");
+    document.getElementById('removedPot').innerHTML = result.Pot.removed.replace(/\n/g, "<br>");
+
+    document.getElementById('newPump').innerHTML = result.Pump.added.replace(/\n/g, "<br>");
+    document.getElementById('changedPump').innerHTML = result.Pump.changed.replace(/\n/g, "<br>");
+    document.getElementById('removedPump').innerHTML = result.Pump.removed.replace(/\n/g, "<br>");
+
+    // document.getElementById('plants').innerHTML = result.Plant.replace(/\n/g, "<br>");
+    // document.getElementById('pots').innerHTML = result.Pot.replace(/\n/g, "<br>");
+    // document.getElementById('pumps').innerHTML = result.Pump.replace(/\n/g, "<br>");
   });
 }
 
