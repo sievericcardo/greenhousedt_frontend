@@ -231,14 +231,14 @@ def submit():
             PREFIX owl: <http://www.w3.org/2002/07/owl#> \
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \
             INSERT { \
-            ast:basilicum3 rdf:type owl:NamedIndividual , \
+            ast:basilicum5 rdf:type owl:NamedIndividual , \
                                     ast:Basilicum ; \
-                        ast:hasIdealMoisture \"60.0\"^^xsd:double ; \
-                        ast:hasPlantId \"5\"^^xsd:string ; \
-                        ast:hasPlantType \"Basilicum\"^^xsd:string . \
+                        ast:idealMoisture \"60.0\"^^xsd:double ; \
+                        ast:plantId \"5\"^^xsd:string ; \
+                        ast:plantType \"Basilicum\"^^xsd:string . \
             } \
             WHERE { \
-            FILTER NOT EXISTS { ast:basilicum3 rdf:type ast:Basilicum . \
+            FILTER NOT EXISTS { ast:basilicum5 rdf:type ast:Basilicum . \
             } \
             } "
     
