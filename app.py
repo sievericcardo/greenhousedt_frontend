@@ -227,7 +227,7 @@ def submit():
     # Get data from the form
     query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \
-            PREFIX ast: <http://www.semanticweb.org/gianl/ontologies/2023/1/sirius-greenhouse#> \
+            PREFIX ast: <http://www.smolang.org/greenhouseDT#> \
             PREFIX owl: <http://www.w3.org/2002/07/owl#> \
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> \
             INSERT { \
