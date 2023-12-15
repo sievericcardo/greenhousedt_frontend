@@ -1,6 +1,6 @@
-# GreenHouseDT Frontend
+# GreenhouseDT Frontend
 
-The frontend for the GreenHouseDT is a Flask application developed in Python to give the user a dashboard to present the changes that the Digital Twin can undergo, as well as the possibility to show the structural self-adaptation by updating the asset model.
+The frontend for the GreenhouseDT is a Flask application developed in Python to give the user a dashboard to present the changes that the Digital Twin can undergo, as well as the possibility to show the structural self-adaptation by updating the asset model.
 
 ## Installation
 
